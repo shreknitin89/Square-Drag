@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Square Drag</string>
+    <string name="text_place_holder">waiting to start</string>
+</resources>
