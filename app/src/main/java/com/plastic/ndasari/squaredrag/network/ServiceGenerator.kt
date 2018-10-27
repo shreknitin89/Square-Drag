@@ -12,38 +12,37 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by ndasari on 19 Oct 2018
  */
-class ServiceGenerator {
+object ServiceGenerator {
 
-    object Companion {
-        private const val sConnectionTimeout: Long = 30
-        private const val sReadTimeout: Long = 30
-        private val httpClient = OkHttpClient.Builder()
-        fun <S> createService(serviceClass: Class<S>, baseUrl: String): S {
-            val gson = GsonBuilder()
-                .enableComplexMapKeySerialization()
-                .serializeNulls()
-                .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
-                .setPrettyPrinting()
-                .setVersion(1.0)
-                .create()
+    private const val sConnectionTimeout: Long = 30
+    private const val sReadTimeout: Long = 30
+    private val httpClient = OkHttpClient.Builder()
 
-            val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    fun <S> createService(serviceClass: Class<S>, baseUrl: String): S {
+        val gson = GsonBuilder()
+            .enableComplexMapKeySerialization()
+            .serializeNulls()
+            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+            .setPrettyPrinting()
+            .setVersion(1.0)
+            .create()
 
-            val client = httpClient.connectTimeout(sConnectionTimeout, TimeUnit.SECONDS)
-                .readTimeout(sReadTimeout, TimeUnit.SECONDS)
-                .addInterceptor(loggingInterceptor)
-                .hostnameVerifier { hostname, _ ->
-                    hostname.matches("dateandtimeasjson.appspot.com".toRegex())
-                }
-                .build()
+        val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
-            val retrofit = Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build()
+        val client = httpClient.connectTimeout(sConnectionTimeout, TimeUnit.SECONDS)
+            .readTimeout(sReadTimeout, TimeUnit.SECONDS)
+            .addInterceptor(loggingInterceptor)
+            .hostnameVerifier { hostname, _ ->
+                hostname.matches("dateandtimeasjson.appspot.com".toRegex())
+            }
+            .build()
 
-            return retrofit.create(serviceClass)
-        }
+        val retrofit = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+
+        return retrofit.create(serviceClass)
     }
 }

@@ -16,7 +16,7 @@ import java.util.*
  */
 class SquareViewModel : ViewModel() {
     private val apiService =
-        ServiceGenerator.Companion.createService(EndPointInterface::class.java, "https://dateandtimeasjson.appspot.com")
+        ServiceGenerator.createService(EndPointInterface::class.java, "https://dateandtimeasjson.appspot.com")
     var data: MutableLiveData<DateData> = MutableLiveData()
     private var timer: Timer? = null
     private var task: MyTimerTask? = null
@@ -48,11 +48,18 @@ class SquareViewModel : ViewModel() {
         task?.cancel()
         timer?.cancel()
         timer?.purge()
+        task = null
+        timer = null
     }
 
     private inner class MyTimerTask : TimerTask() {
         override fun run() {
             loadData()
+        }
+
+        override fun cancel(): Boolean {
+            apiService.getDateSeconds().cancel()
+            return super.cancel()
         }
     }
 }

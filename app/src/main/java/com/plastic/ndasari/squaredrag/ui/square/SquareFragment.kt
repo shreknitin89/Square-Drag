@@ -40,11 +40,14 @@ class SquareFragment : Fragment(), View.OnDragListener, View.OnLongClickListener
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         viewModel = ViewModelProviders.of(this).get(SquareViewModel::class.java)
 
         initializeView()
         rotateView()
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         if (hasInternet()) {
             try {
@@ -102,7 +105,7 @@ class SquareFragment : Fragment(), View.OnDragListener, View.OnLongClickListener
                 return dragDropEvent(event, v)
             }
             DragEvent.ACTION_DRAG_ENDED -> {
-                return true
+                return dragExitAnimation(v)
             }
 
             // An unknown action type was received.
